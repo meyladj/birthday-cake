@@ -717,7 +717,7 @@ backgroundRepeat: 'no-repeat',
       e.target.style.transform = 'translateX(-50%) scale(1)';
     }}
   >
-    💨 Blow the candles
+     Blow the candles
   </button>
 )}
 
