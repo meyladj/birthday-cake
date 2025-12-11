@@ -12,9 +12,12 @@ export default function BirthdayCakeWithRealCandles() {
   const rendererRef = useRef(null);
   const flamesRef = useRef([]);
   const candleSpritesRef = useRef([]);
+  const candleLightsRef = useRef([]);
   const confettiRef = useRef([]);
   const audioContextRef = useRef(null);
   const analyserRef = useRef(null);
+  const candlesLitRef = useRef(true);
+  const showConfettiRef = useRef(false);
 
   useEffect(() => {
     // Setup Three.js scene
@@ -96,10 +99,12 @@ loader.load('/back.jpg', (texture) => {
     const candleLight1 = new THREE.PointLight(0xffd700, 2, 10);
     candleLight1.position.set(-1.5, 5.5, 0);
     scene.add(candleLight1);
+    candleLightsRef.current.push(candleLight1);
 
     const candleLight2 = new THREE.PointLight(0xffd700, 2, 10);
     candleLight2.position.set(1.5, 5.5, 0);
     scene.add(candleLight2);
+    candleLightsRef.current.push(candleLight2);
 
     // Group for rotating cake
     const cakeGroup = new THREE.Group();
@@ -449,7 +454,7 @@ cakeGroup.add(textMesh);
 
       // Animate flames
       flamesRef.current.forEach((flame, i) => {
-        if (candlesLit) {
+        if (candlesLitRef.current && flame.visible) {
           const time = Date.now() * 0.002;
           if (flame.geometry.type === 'SphereGeometry') {
             flame.scale.y = 1.6 + Math.sin(time * 2 + i) * 0.15;
@@ -460,7 +465,7 @@ cakeGroup.add(textMesh);
       });
 
       // Animate confetti
-      if (showConfetti) {
+      if (showConfettiRef.current) {
         confettiRef.current.forEach(confetto => {
           confetto.position.y -= 0.04;
           confetto.rotation.x += 0.08;
@@ -496,8 +501,14 @@ cakeGroup.add(textMesh);
       renderer.domElement.removeEventListener('mouseleave', onMouseUp);
       mountRef.current?.removeChild(renderer.domElement);
       renderer.dispose();
+      
+      // Nettoyer les références
+      flamesRef.current = [];
+      candleSpritesRef.current = [];
+      candleLightsRef.current = [];
+      confettiRef.current = [];
     };
-  }, [candlesLit, showConfetti]);
+  }, []); // Exécuter une seule fois au montage
 
   const setupMicrophone = async () => {
     try {
@@ -517,7 +528,7 @@ cakeGroup.add(textMesh);
       const dataArray = new Uint8Array(bufferLength);
       
       const checkBlow = () => {
-        if (!candlesLit) return;
+        if (!candlesLitRef.current) return;
         
         analyser.getByteFrequencyData(dataArray);
         const average = dataArray.reduce((a, b) => a + b) / bufferLength;
@@ -539,16 +550,43 @@ cakeGroup.add(textMesh);
   const blowCandles = () => {
     if (!candlesLit) return;
     
-    setCandlesLit(false);
+    console.log('Soufflage des bougies !'); // Pour debug
+    console.log('Nombre de flammes:', flamesRef.current.length);
     
-    flamesRef.current.forEach(flame => {
+    setCandlesLit(false);
+    candlesLitRef.current = false; // Mettre à jour la ref
+    
+    // Éteindre IMMÉDIATEMENT toutes les flammes
+    flamesRef.current.forEach((flame, index) => {
+      console.log(`Extinction flamme ${index}`);
       flame.visible = false;
     });
+    
+    // Éteindre progressivement les lumières des bougies
+    candleLightsRef.current.forEach(light => {
+      const startIntensity = light.intensity;
+      const startTime = Date.now();
+      const duration = 500;
+      
+      const dimLight = () => {
+        const elapsed = Date.now() - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        light.intensity = startIntensity * (1 - progress);
+        
+        if (progress < 1) {
+          requestAnimationFrame(dimLight);
+        }
+      };
+      
+      dimLight();
+    });
 
+    // Lancer les confettis après un court délai
     setTimeout(() => {
       createConfetti();
       setShowConfetti(true);
-    }, 500);
+      showConfettiRef.current = true; // Mettre à jour la ref
+    }, 600);
   };
 
   const createConfetti = () => {
@@ -648,7 +686,7 @@ backgroundRepeat: 'no-repeat',
         boxShadow: '0 4px 15px rgba(0,0,0,0.1)',
         zIndex: 10,
       }}>
-        🖱️ <strong>Glissez</strong> pour tourner le gâteau
+         <strong>Glisser</strong> pour tourner le gâteau
       </div>
 
       {candlesLit && (
