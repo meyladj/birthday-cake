@@ -744,14 +744,14 @@ backgroundRepeat: 'no-repeat',
             boxShadow: '0 0 60px rgba(255, 192, 224, 0.6)',
             fontStyle: 'italic',
           }}>
-            🎊 Happy 26th Birthday Railo! 🎊
+             ça fait quoi d'avoir la 30 aine ?
             <div style={{ 
               fontSize: '32px', 
               marginTop: '20px',
               color: '#c41e3a',
               fontWeight: 300,
             }}>
-              Make a beautiful wish ✨
+              Make a beautiful wish 
             </div>
           </div>
         </div>
