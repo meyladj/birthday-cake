@@ -382,8 +382,8 @@ ctx.fillText("Joyeux Anniversaire", textCanvas.width/2, 380);
 ctx.font = "bold 260px Georgia";
 
 // Prénom (plus grand & lisible)
-ctx.strokeText("Rayano", textCanvas.width/2, 650);
-ctx.fillText("Rayano", textCanvas.width/2, 650);
+ctx.strokeText("Yidir", textCanvas.width/2, 650);
+ctx.fillText("Yidir", textCanvas.width/2, 650);
 
 const textTexture = new THREE.CanvasTexture(textCanvas);
 textTexture.needsUpdate = true;
@@ -669,7 +669,7 @@ backgroundRepeat: 'no-repeat',
             fontStyle: 'italic',
             animation: 'gentlePulse 2s ease-in-out infinite',
           }}>
-            💨 Blow the Candles 💨
+             Blow the Candles 
           </h1>
         </div>
       )}
